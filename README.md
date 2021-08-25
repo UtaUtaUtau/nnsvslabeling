@@ -19,4 +19,6 @@ Just follow the steps that the plugin gives you. It supports stringing together 
 
 It also supports ARPAbet and X-Sampa for other languages, but stringing CCs is a bit primitive, and it only cuts them at the middle.
 
+It will always separate the phonemes `sil`, `pau`, `cl`, `br`, and `vf`.
+
 This will only directly translate timing according to the BPM of the UST. It puts all notes at middle C (C4).

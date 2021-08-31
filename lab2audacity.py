@@ -32,5 +32,5 @@ elif ext == '.txt':
             time2 = j.strip().split()
             f.write(f'{int(float(time1[0]) * (10 ** 7))} {int(float(time2[0]) * (10 ** 7))} {time1[2]}\n')
         if not aud[-1].strip().endswith('-'):
-            time = aud[-1].strip.split()
+            time = aud[-1].strip().split()
             f.write(f'{int(float(time[0]) * (10 ** 7))} {int(float(time[1]) * (10 ** 7))} {time1[2]}\n')

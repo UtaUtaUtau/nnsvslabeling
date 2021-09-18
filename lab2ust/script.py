@@ -2,6 +2,7 @@ import pyutau
 import traceback
 import time
 import sys
+import os
 import math
 
 try:
@@ -50,7 +51,7 @@ try:
         else:
             vowels = None
             standalone = ['cl', 'pau', 'br', 'vf', 'sil']
-            phoneme_mode = input('Select phoneme set\n1: Arpabet\n2:X-Sampa\n')
+            phoneme_mode = input('Select phoneme set\n1: Arpabet\n2: X-Sampa\n')
             if phoneme_mode == '1':
                 vowels = ['aa', 'ae', 'ah', 'ao', 'ax', 'eh', 'er', 'ih', 'iy', 'uh', 'uw', 'aw', 'ay', 'ey', 'ow', 'oy']
             else:
@@ -69,7 +70,7 @@ try:
                         coda = 0
                         start = True
                         end = True
-                        for j in range(i-1, 0, -1):
+                        for j in range(i-1, -1, -1):
                             if phonemes[j] in vowels:
                                 start = False
                                 break
@@ -92,6 +93,13 @@ try:
                         phoneme_ranges.append((i-onset, i+coda))
                         duration_ranges.append((i, i+coda))
                 i += 1
+
+            #Correct duration ranges
+            for i in range(0, len(duration_ranges) - 1):
+                curr_range = duration_ranges[i]
+                next_range = duration_ranges[i+1]
+                duration_ranges[i] = (curr_range[0], next_range[0]-1)
+                
             #Make new set
             new_phonemes = []
             new_duration = []
@@ -125,4 +133,4 @@ try:
 except Exception as e:
     for i in traceback.format_exception(e.__class__, e, e.__traceback__):
         print(i, end='')
-    time.sleep(5)
+    os.system('pause')

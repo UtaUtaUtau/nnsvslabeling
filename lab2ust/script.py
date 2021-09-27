@@ -132,7 +132,7 @@ try:
     for i in range(0, len(duration) - 1):
         quant_dur = quantize(duration[i])
         error = duration[i] - quant_dur
-        duration[i] = int_dur
+        duration[i] = quant_dur
         duration[i+1] += error
 
     duration[-1] = quantize(duration[-1])

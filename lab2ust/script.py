@@ -5,6 +5,9 @@ import sys
 import os
 import math
 
+def quantize(x):
+    return int(round(x / 15)) * 15
+
 try:
     plugin = pyutau.UtauPlugin(sys.argv[-1])
     lab = open(input('Drag and drop the .lab file here: ').strip('"')).readlines()
@@ -124,7 +127,16 @@ try:
             error = 15 - duration[i]
             duration[i-1] -= error
             duration[i] = 15
-        
+
+    #Compensate for quantization
+    for i in range(0, len(duration) - 1):
+        quant_dur = quantize(duration[i])
+        error = duration[i] - quant_dur
+        duration[i] = int_dur
+        duration[i+1] += error
+
+    duration[-1] = quantize(duration[-1])
+    
     for i in range(0, len(duration)):
         note = pyutau.create_note(phonemes[i] if phonemes[i] != 'pau' else 'R', duration[i])
         plugin.notes.append(note)

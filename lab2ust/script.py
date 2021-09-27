@@ -22,18 +22,12 @@ try:
         duration.append((float(ph[1]) - float(ph[0])) / (10 ** 7))
         duration[-1] *= ups
 
-    #Try to figure if it's a Japanese label or not.
-    jpn = True
-    for i in phonemes:
-        if i != 'N' and i.lower() != i:
-            jpn = False
-            break
-
-    #Ask if fusing
-    if jpn:
-        print('Detected a Japanese label.')
+    #Ask if the label is Japanese or not.
+    jpn = input('Is this label for Japanese? [y/n] ')
+    if jpn.lower() == 'y':
+        jpn = True
     else:
-        print('Detected a different language.')
+        jpn = False
         
     fuse = input('Automatically fuse? [y/n] ')
     if fuse.lower() == 'y':
@@ -143,7 +137,7 @@ try:
     duration[-1] = quantize(duration[-1], quant_strength)
     
     for i in range(0, len(duration)):
-        note = pyutau.create_note(phonemes[i] if phonemes[i] != 'pau' else 'R', duration[i])
+        note = pyutau.create_note(phonemes[i] if phonemes[i] not in ['pau', 'sil'] else 'R', duration[i])
         plugin.notes.append(note)
 
     plugin.write(sys.argv[-1])

@@ -22,3 +22,19 @@ It also supports ARPAbet and X-Sampa for other languages, but stringing CCs is a
 It will always separate the phonemes `sil`, `pau`, `cl`, `br`, and `vf`.
 
 This will only directly translate timing according to the BPM of the UST. It puts all notes at middle C (C4).
+
+Update 09/28: lab2ust now quantizes notes. You need to specify the note length of the quantization though. Here's a list of note lengths for quantization.
+
+| Quantize | Note Length |
+| --- | --- |
+| 128th note | 15 |
+| 64th triplet | 20 |
+| 64th note | 30 |
+| 32nd triplet | 40 |
+| 32nd note | 60 |
+| 16th triplet | 80 |
+| 16th note | 120 |
+| 8th triplet | 160 |
+| 8th note | 240 |
+| Quarter triplet | 320 |
+| Quarter note | 480 |

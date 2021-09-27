@@ -5,8 +5,8 @@ import sys
 import os
 import math
 
-def quantize(x):
-    return int(round(x / 15)) * 15
+def quantize(x, intensity):
+    return int(round(x / intensity)) * intensity
 
 try:
     plugin = pyutau.UtauPlugin(sys.argv[-1])
@@ -128,14 +128,19 @@ try:
             duration[i-1] -= error
             duration[i] = 15
 
+    quant_strength = input('Quantization in note length (int) [15]: ')
+    if not quant_strength:
+        quant_strength = 15
+    else:
+        quant_strength = int(quant_strength)
     #Compensate for quantization
     for i in range(0, len(duration) - 1):
-        quant_dur = quantize(duration[i])
+        quant_dur = quantize(duration[i], quant_strength)
         error = duration[i] - quant_dur
         duration[i] = quant_dur
         duration[i+1] += error
 
-    duration[-1] = quantize(duration[-1])
+    duration[-1] = quantize(duration[-1], quant_strength)
     
     for i in range(0, len(duration)):
         note = pyutau.create_note(phonemes[i] if phonemes[i] != 'pau' else 'R', duration[i])

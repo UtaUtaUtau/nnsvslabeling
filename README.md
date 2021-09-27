@@ -25,7 +25,7 @@ It will always separate the phonemes `sil`, `pau`, `cl`, `br`, and `vf`.
 
 This will only directly translate timing according to the BPM of the UST. It puts all notes at middle C (C4).
 
-Update 09/28: lab2ust now quantizes notes. You need to specify the note length of the quantization though. Here's a list of note lengths for quantization.
+Update 09/28: lab2ust now quantizes notes. You need to specify the note length of the quantization though. Here's a list of note lengths for quantization. If you don't want quantization, just put 1.
 
 | Quantize | Note Length |
 | --- | --- |

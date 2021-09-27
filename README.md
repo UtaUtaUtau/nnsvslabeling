@@ -17,6 +17,8 @@ The whole lab2ust folder will be put in the UTAU plugins folder.
 
 Just follow the steps that the plugin gives you. It supports stringing together phonemes to notes. It supports the Japanese phoneme set that NNSVS, CeVIO, Sinsy, NEUTRINO, and Synthesizer V uses.
 
+Japanese is coded in differently to support suffixes on vowels. This was mostly an idea that my friends and I thought of. In that case, Japanese hopefully supports `VS` where `V` is the vowel and `S` is the suffix. (e.g. falsetto could be `aF`, `iF`, and so on)
+
 It also supports ARPAbet and X-Sampa for other languages, but stringing CCs is a bit primitive, and it only cuts them at the middle.
 
 It will always separate the phonemes `sil`, `pau`, `cl`, `br`, and `vf`.

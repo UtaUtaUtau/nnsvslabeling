@@ -4,23 +4,83 @@ import time
 import sys
 import os
 import math
+import struct
 
 def quantize(x, intensity):
     return int(round(x / intensity)) * intensity
+
+def hz_to_midi(x):
+    x = max(x, 55)
+    note = 12 * (math.log2(x) - math.log2(440))
+    return int(round(note + 69))
+
+def base_frq(f0, f0_min=55, f0_max=20000):
+    value = 0
+    r = 1
+    p = [0, 0, 0, 0, 0, 0]
+    q = 0
+    avg_frq = 0
+    base_value = 0
+    
+    for i in range(0, len(f0)):
+        value = f0[i]
+        if value < f0_max and value > f0_min:
+            r = 1
+
+            for j in range(0, 6):
+                if i > j:
+                    q = f0[i - j - 1] - value
+                    p[j] = value / (value + q * q)
+                else:
+                    p[j] = 1 / (1 + value)
+                    
+                r *= p[j]
+
+            avg_frq += value * r
+            base_value += r
+
+    if base_value > 0:
+        avg_frq /= base_value
+    return avg_frq
 
 try:
     plugin = pyutau.UtauPlugin(sys.argv[-1])
     lab = open(input('Drag and drop the .lab file here: ').strip('"')).readlines()
     phonemes = []
     duration = []
+    pitches = []
     ups = 480 * float(plugin.settings['Tempo']) / 60
+    pps = 44100 / 256
+
+    frq_loc = input('Drag and drop the .frq file here (leave blank if no frq): ').strip('"')
+    frq = [0]
     
     #Save phonemes in duration in list. Convert durations to note lengths
     for i in lab:
         ph = i.strip().split()
         phonemes.append(ph[2])
-        duration.append((float(ph[1]) - float(ph[0])) / (10 ** 7))
-        duration[-1] *= ups
+        duration.append(ups * (float(ph[1]) - float(ph[0])) / (10 ** 7))
+
+    #Load in frequency file if it's inputted
+    if frq_loc:
+        print('Reading .frq file...')
+        with open(frq_loc, 'rb') as f:
+            header_text = f.read(8).decode('utf-8')
+            assert header_text == 'FREQ0003'
+
+            samples_per_frq = struct.unpack('<i', f.read(4))[0]
+            assert samples_per_frq == 256
+
+            f.read(24)
+
+            num_chunks = struct.unpack('<i', f.read(4))[0]
+
+            for i in range(num_chunks):
+                curr = struct.unpack('<2d', f.read(16))[0]
+                if curr <= 55:
+                    frq.append(frq[-1])
+                else:
+                    frq.append(curr)
 
     #Ask if the label is Japanese or not.
     jpn = input('Is this label for Japanese? [y/n] ')
@@ -92,7 +152,7 @@ try:
                 i += 1
 
             #Correct duration ranges
-            for i in range(0, len(duration_ranges) - 1):
+            for i in range(len(duration_ranges) - 1):
                 curr_range = duration_ranges[i]
                 next_range = duration_ranges[i+1]
                 duration_ranges[i] = (curr_range[0], next_range[0]-1)
@@ -106,9 +166,23 @@ try:
                 new_duration.append(math.fsum(duration[i[0]:i[1]+1]))
             phonemes = new_phonemes
             duration = new_duration
-                            
+
+    #Make pitch array
+    if frq_loc:
+        start = 0
+        for i in range(len(duration)):
+            end = start + duration[i] / ups
+            i_start = int(round(start * pps))
+            i_end = int(round(end * pps))
+            pitch = hz_to_midi(base_frq(frq[i_start:i_end]))
+            print(pitch)
+            pitches.append(pitch)
+            start = end
+    else:
+        pitches = [60 for x in range(len(duration))]
+    
     #Compensate duration for decimal to integer
-    for i in range(0, len(duration) - 1):
+    for i in range(len(duration) - 1):
         int_dur = int(duration[i])
         error = duration[i] - int_dur
         duration[i] = int_dur
@@ -137,7 +211,9 @@ try:
     duration[-1] = quantize(duration[-1], quant_strength)
     
     for i in range(0, len(duration)):
-        note = pyutau.create_note(phonemes[i] if phonemes[i] not in ['pau', 'sil'] else 'R', duration[i])
+        note = pyutau.create_note(phonemes[i] if phonemes[i] not in ['pau', 'sil'] else 'R', duration[i], note_num = pitches[i])
+        if note.lyric == 'R':
+            note.note_num = 60
         plugin.notes.append(note)
 
     plugin.write(sys.argv[-1])

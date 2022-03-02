@@ -11,10 +11,11 @@ def quantize(x, intensity):
 
 def hz_to_midi(x):
     x = max(x, 55)
-    note = 12 * (math.log2(x) - math.log2(440))
+    note = 12 * (math.log2(x / 440))
     return int(round(note + 69))
 
-def base_frq(f0, f0_min=55, f0_max=20000):
+#Copied from https://github.com/titinko/frq0003gen/blob/master/src/frq0003gen.cpp
+def base_frq(f0, f0_min=55, f0_max=1760):
     value = 0
     r = 1
     p = [0, 0, 0, 0, 0, 0]
@@ -22,12 +23,12 @@ def base_frq(f0, f0_min=55, f0_max=20000):
     avg_frq = 0
     base_value = 0
     
-    for i in range(0, len(f0)):
+    for i in range(len(f0)):
         value = f0[i]
         if value < f0_max and value > f0_min:
             r = 1
 
-            for j in range(0, 6):
+            for j in range(6):
                 if i > j:
                     q = f0[i - j - 1] - value
                     p[j] = value / (value + q * q)
@@ -81,7 +82,8 @@ try:
                     frq.append(frq[-1])
                 else:
                     frq.append(curr)
-
+        del frq[0]
+        
     #Ask if the label is Japanese or not.
     jpn = input('Is this label for Japanese? [y/n] ')
     if jpn.lower() == 'y':
@@ -110,8 +112,10 @@ try:
             standalone = ['cl', 'pau', 'br', 'vf', 'sil']
             phoneme_mode = input('Select phoneme set\n1: Arpabet\n2: X-Sampa\n')
             if phoneme_mode == '1':
+                #Vowel list based on Arpasing
                 vowels = ['aa', 'ae', 'ah', 'ao', 'ax', 'eh', 'er', 'ih', 'iy', 'uh', 'uw', 'aw', 'ay', 'ey', 'ow', 'oy']
             else:
+                #Vowel list from https://en.wikipedia.org/wiki/X-SAMPA#Vowels
                 vowels = ['i', 'y', '1', '}', 'M', 'u', 'I', 'Y', 'I\\', 'U\\', 'U', 'e', '2', '@\\', '8', '7', 'o', 'e_o', '2_o', '@', 'o_o', 'E', '9', '3', '3\\', 'V', 'O', '{', '6', 'a', '&', 'a_"', 'A', 'Q']
             phoneme_ranges = []
             duration_ranges = []
@@ -167,7 +171,7 @@ try:
             phonemes = new_phonemes
             duration = new_duration
 
-    #Make pitch array
+    #Make pitch list
     if frq_loc:
         start = 0
         for i in range(len(duration)):
@@ -175,7 +179,6 @@ try:
             i_start = int(round(start * pps))
             i_end = int(round(end * pps))
             pitch = hz_to_midi(base_frq(frq[i_start:i_end]))
-            print(pitch)
             pitches.append(pitch)
             start = end
     else:
@@ -201,6 +204,7 @@ try:
         quant_strength = 15
     else:
         quant_strength = int(quant_strength)
+        
     #Compensate for quantization
     for i in range(0, len(duration) - 1):
         quant_dur = quantize(duration[i], quant_strength)

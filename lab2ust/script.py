@@ -96,7 +96,7 @@ try:
         if jpn:
         #Fuse CVs
             vowels = ['a', 'i', 'u', 'e', 'o']
-            standalone = ['N', 'cl', 'pau', 'br', 'vf', 'sil']
+            standalone = ['N', 'cl', 'pau', 'br', 'vf', 'sil', 'Edge']
             for i in range(len(duration) - 1, -1, -1):
                 if phonemes[i][0] not in vowels:
                     if phonemes[i] in standalone:
@@ -109,7 +109,7 @@ try:
                             del phonemes[i]
         else:
             vowels = None
-            standalone = ['cl', 'pau', 'br', 'vf', 'sil']
+            standalone = ['cl', 'pau', 'br', 'vf', 'sil', 'Edge']
             phoneme_mode = input('Select phoneme set\n1: Arpabet\n2: X-Sampa\n')
             if phoneme_mode == '1':
                 #Vowel list based on Arpasing

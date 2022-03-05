@@ -199,9 +199,9 @@ try:
             duration[i-1] -= error
             duration[i] = 15
 
-    quant_strength = input('Quantization in note length (int) [15]: ')
+    quant_strength = input('Quantization in note length (int) [60]: ')
     if not quant_strength:
-        quant_strength = 15
+        quant_strength = 60
     else:
         quant_strength = int(quant_strength)
         

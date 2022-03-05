@@ -12,6 +12,12 @@ This script automatically connects the ends of each label to the start of the ne
 
 This script does not do anything about timing with HTS mono labels.
 
+### check_labels.py
+
+It's exactly what the file says. It checks for wrong phonemes in every .lab file that it finds. To run, put it in the folder where you keep your .lab files and just, run normally!
+
+It checks Japanese labels by default, but if you want to change what language it checks, just open it up and change the `phones` list to the phoneme list you want it to be.
+
 ### lab2ust
 The whole lab2ust folder will be put in the UTAU plugins folder.
 

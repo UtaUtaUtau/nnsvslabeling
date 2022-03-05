@@ -14,7 +14,7 @@ This script does not do anything about timing with HTS mono labels.
 
 ### check_labels.py
 
-It's exactly what the file says. It checks for wrong phonemes in every .lab file that it finds. To run, put it in the folder where you keep your .lab files and just, run normally!
+It's exactly what the file says. It checks for wrong phonemes in every .lab file that it finds. It also checks if you have a label that has the same start and end timing. To run, put it in the folder where you keep your .lab files and just, run normally!
 
 It checks Japanese labels by default, but if you want to change what language it checks, just open it up and change the `phones` list to the phoneme list you want it to be.
 

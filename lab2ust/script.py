@@ -95,8 +95,8 @@ try:
     if fuse.lower() == 'y':
         if jpn:
         #Fuse CVs
-            vowels = ['a', 'i', 'u', 'e', 'o']
-            standalone = ['N', 'cl', 'pau', 'br', 'vf', 'sil', 'Edge']
+            vowels = ['a', 'i', 'u', 'e', 'o', 'A', 'I', 'U', 'E', 'O']
+            standalone = ['N', 'cl', 'pau', 'br', 'vf', 'sil']
             for i in range(len(duration) - 1, -1, -1):
                 if phonemes[i][0] not in vowels:
                     if phonemes[i] in standalone:
@@ -109,24 +109,26 @@ try:
                             del phonemes[i]
         else:
             vowels = None
-            standalone = ['cl', 'pau', 'br', 'vf', 'sil', 'Edge']
-            phoneme_mode = input('Select phoneme set\n1: Arpabet\n2: X-Sampa\n')
+            standalone = ['pau', 'br', 'sil']
+            phoneme_mode = input('Select phoneme set\n1: Arpabet\n2: Five Vowel System\n3: Custom\n')
             if phoneme_mode == '1':
-                #Vowel list based on Arpasing
-                vowels = ['aa', 'ae', 'ah', 'ao', 'ax', 'eh', 'er', 'ih', 'iy', 'uh', 'uw', 'aw', 'ay', 'ey', 'ow', 'oy']
+                #Vowel list + Vocalic consonants from https://en.wikipedia.org/wiki/ARPABET
+                vowels = ['aa', 'ae', 'ah', 'ao', 'aw', 'ax', 'axr', 'ay', 'eh', 'er', 'ey', 'ih', 'ix', 'iy', 'ow', 'oy', 'uh', 'uw', 'ux', 'el', 'em', 'en']
+            elif phoneme_mode == '2':
+                vowels = ['a', 'e', 'i', 'o', 'u']
             else:
-                #Vowel list from https://en.wikipedia.org/wiki/X-SAMPA#Vowels
-                vowels = ['i', 'y', '1', '}', 'M', 'u', 'I', 'Y', 'I\\', 'U\\', 'U', 'e', '2', '@\\', '8', '7', 'o', 'e_o', '2_o', '@', 'o_o', 'E', '9', '3', '3\\', 'V', 'O', '{', '6', 'a', '&', 'a_"', 'A', 'Q']
+                vowels = list(map(lambda x : x.strip(' "\''), input('Input the vowels of the language (comma-separated): ').strip().split(',')))
+                
             phoneme_ranges = []
             duration_ranges = []
             i = 0
             #Get ranges hopefully
             while i < len(phonemes):
-                if phonemes[i] in standalone:
+                if phonemes[i] in standalone: # Standalones are standalones for a reason <3
                     phoneme_ranges.append((i, i))
                     duration_ranges.append((i, i))
                 else:
-                    if phonemes[i] in vowels:
+                    if phonemes[i] in vowels: # Vowels need to find their onset and coda so yah
                         onset = 0
                         coda = 0
                         start = True
@@ -153,6 +155,31 @@ try:
                             coda = math.floor(coda / 2)
                         phoneme_ranges.append((i-onset, i+coda))
                         duration_ranges.append((i, i+coda))
+                    else: # If the consonants are surrounded by standalones they're just a consonant island so they're fused in one note !
+                        vowel_near_left = True
+                        vowel_near_right = True
+                        s = 0
+                        e = 0
+                        for j in range(i-1, -1, -1):
+                            if phonemes[j] in standalone:
+                                vowel_near_left = False
+                                s = j+1
+                                break
+                            if phonemes[j] in vowels:
+                                break
+
+                        for j in range(i+1, len(phonemes)):
+                            if phonemes[j] in standalone:
+                                vowel_near_right = False
+                                e = j-1
+                                break
+                            if phonemes[j] in vowels:
+                                break
+
+                        if not vowel_near_left and not vowel_near_right:
+                            phoneme_ranges.append((s, e))
+                            duration_ranges.append((s, e))
+                            i = e
                 i += 1
 
             #Correct duration ranges

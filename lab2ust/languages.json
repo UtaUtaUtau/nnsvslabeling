@@ -1,0 +1,31 @@
+[
+	{
+		"_comment": "Vowel list + Vocalic consonants from https://en.wikipedia.org/wiki/ARPABET",
+		"name": "Arpabet",
+		"vowels": ["aa", "ae", "ah", "ao", "aw", "ax", "axr", "ay", "eh", "er", "ey", "ih", "ix", "iy", "ow", "oy", "uh", "uw", "ux", "el", "em", "en"]
+	},
+	{
+		"name": "Five Vowel System",
+		"vowels": ["a", "e", "i", "o", "u"]
+	},
+	{
+		"_comment": "From https://github.com/Archivoice/nnsvs-chinese-support/ without coda only phonemes",
+		"name": "Chinese",
+		"vowels": ["a", "ia", "ua", "A", "iA", "uA", "e", "ie", "E", "yu", "i", "I", "ih", "uo", "er", "u", "V", "yE", "uE", "O", "iO", "yI", "uu", "iU"]
+	},
+	{
+		"_comment": "From https://github.com/overdramatic/nnsvs-ptbr-brapa-support without coda only phonemes",
+		"name": "BRAPA",
+		"vowels": ["a", "oa", "ah", "ahn", "ax", "an", "e", "en", "eh", "ehn", "ae", "aen", "i", "in", "i0", "o", "on", "oh", "ohn", "u", "un", "u0"]
+	},
+	{
+		"_comment": "From https://github.com/SzopaTatyJarka/nnsvs-polish-support/",
+		"name": "Polish",
+		"vowels": ["i", "y", "e", "a", "o", "u", "O", "E", "A"]
+	},
+	{
+		"_comment": "From https://github.com/Kor-SVS/nnsvs-korean-support",
+		"name": "Korean",
+		"vowels": ["a", "eo", "o", "u", "eu", "i", "e"]
+	}
+]

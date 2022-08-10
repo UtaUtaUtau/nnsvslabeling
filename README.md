@@ -27,17 +27,13 @@ Just follow the steps that the plugin gives you. It supports stringing together 
 
 Japanese is coded in differently to support suffixes on vowels. This was mostly an idea that my friends and I thought of. In that case, Japanese hopefully supports `VS` where `V` is the vowel and `S` is the suffix. (e.g. falsetto could be `aF`, `iF`, and so on)
 
-It supports ARPABET, the Five Vowel System (a, e, i, o, u) and custom language support by allowing the user to input the vowels of the language, but stringing CCs is a bit primitive as it only cuts them at the middle.
+Other languages are supported by the `languages.json` file. Some languages that have public repositories have been added to this file. Adding a language would only require adding another definition of the language. I hope following the JSON format is easy as I didn't want to use YAML since that requires installing a library. Consonant splitting is still primitive as it only finds the center and splits that way.
 
 It will always separate the phonemes `pau`, `br`, and `sil`.
 
 This will only directly translate timing according to the BPM of the UST. It puts all notes at middle C (C4) when a `.frq` file is not provided.
 
-Update 09/28/2021: lab2ust now quantizes notes. You need to specify the note length of the quantization though. Here's a list of note lengths for quantization. If you don't want quantization, just put 1.
-
-Update 03/02/2022: lab2ust can now read `.frqs` to automatically place the pitches of the notes. It is recommended to generate `.frqs` with moresampler for highest accuracy. PS: It can ONLY read `.frqs` so you would need to convert the `.mrq` to `.frq`. This can be done with frq editor. If you are OK with checking the frequencies instead, you can generate with speedwagon instead.
-
-Update 08/02/2022: lab2ust will now check if there are parts of the label that only has consonants and is surrounded by the standalone phonemes `pau`, `br`, and `sil`. It will fuse them into one note to avoid zero length notes. lab2ust also supports custom language by allowing the user to input the vowels of the language comma-separated. This also accepts it if each phoneme is surrounded by either `'` or `"`.
+**Update 09/28/2021:** lab2ust now quantizes notes. You need to specify the note length of the quantization though. Here's a list of note lengths for quantization. If you don't want quantization, just put 1.
 
 | Quantize | Note Length |
 | --- | --- |
@@ -52,3 +48,9 @@ Update 08/02/2022: lab2ust will now check if there are parts of the label that o
 | 8th note | 240 |
 | Quarter triplet | 320 |
 | Quarter note | 480 |
+
+**Update 03/02/2022:** lab2ust can now read `.frqs` to automatically place the pitches of the notes. It is recommended to generate `.frqs` with moresampler for highest accuracy. PS: It can ONLY read `.frqs` so you would need to convert the `.mrq` to `.frq`. This can be done with frq editor. If you are OK with checking the frequencies instead, you can generate with speedwagon instead.
+
+**Update 08/02/2022:** lab2ust will now check if there are parts of the label that only has consonants and is surrounded by the standalone phonemes `pau`, `br`, and `sil`. It will fuse them into one note to avoid zero length notes. ~~lab2ust also supports custom language by allowing the user to input the vowels of the language comma-separated. This also accepts it if each phoneme is surrounded by either `'` or `"`.~~
+
+**Update 08/10/2022:** Improved language support by removing (almost all) the hardcoded languages from the code. Japanese is the only language that stays hardcoded because people have made resources specific to how I have developed the Japanese support. Basically, I made adding languages easier but kept Japanese the same cuz backwards compatibility.

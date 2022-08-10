@@ -5,6 +5,7 @@ import sys
 import os
 import math
 import struct
+import json
 
 def quantize(x, intensity):
     return int(round(x / intensity)) * intensity
@@ -110,15 +111,12 @@ try:
         else:
             vowels = None
             standalone = ['pau', 'br', 'sil']
-            phoneme_mode = input('Select phoneme set\n1: Arpabet\n2: Five Vowel System\n3: Custom\n')
-            if phoneme_mode == '1':
-                #Vowel list + Vocalic consonants from https://en.wikipedia.org/wiki/ARPABET
-                vowels = ['aa', 'ae', 'ah', 'ao', 'aw', 'ax', 'axr', 'ay', 'eh', 'er', 'ey', 'ih', 'ix', 'iy', 'ow', 'oy', 'uh', 'uw', 'ux', 'el', 'em', 'en']
-            elif phoneme_mode == '2':
-                vowels = ['a', 'e', 'i', 'o', 'u']
-            else:
-                vowels = list(map(lambda x : x.strip(' "\''), input('Input the vowels of the language (comma-separated): ').strip().split(',')))
-                
+            langs = json.loads(open(os.path.dirname(sys.argv[-2]) + '/languages.json').read())
+            print('Select phoneme set')
+            for k, v in enumerate(langs):
+                print(f'{k+1}: {v["name"]}')
+            phoneme_mode = int(input()) - 1
+            vowels = langs[phoneme_mode]["vowels"]
             phoneme_ranges = []
             duration_ranges = []
             i = 0

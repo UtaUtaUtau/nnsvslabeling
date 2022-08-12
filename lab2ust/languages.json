@@ -16,7 +16,7 @@
 	{
 		"_comment": "From https://github.com/overdramatic/nnsvs-ptbr-brapa-support without coda only phonemes",
 		"name": "BRAPA",
-		"vowels": ["a", "oa", "ah", "ahn", "ax", "an", "e", "en", "eh", "ehn", "ae", "aen", "i", "in", "i0", "o", "on", "oh", "ohn", "u", "un", "u0"]
+		"vowels": ["a", "oa", "ah", "ahn", "ax", "an", "e", "en", "eh", "ehn", "ae", "aen", "i", "in", "i0", "o", "on", "oh", "ohn", "u", "un", "u0", "rh"]
 	},
 	{
 		"_comment": "From https://github.com/SzopaTatyJarka/nnsvs-polish-support/",

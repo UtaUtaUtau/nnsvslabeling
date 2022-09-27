@@ -25,20 +25,24 @@ Update 06/15/2022: Added a feature that counts how many instances of each phonem
 This script is for getting some statistics for your NNSVS/ENUNU database. It reads all the USTs and LABs of the database (it will only count the LABs that already have USTs by default). You can drag and drop the database folder over the script like with lab2audacity, but this script also takes in additional arguments for settings. Here's the whole help documentation of the script, but this may be invoked with `database_stats.py -h` as well.
 
 ```
-usage: database_stats.py [-h] [--all-labs] [--include-pau] db
+usage: database_stats.py [-h] [--all-labs] [--include-pau] [--skip-diphone] [--write-diphone] db
 
 Calculates some statistics for your existing NNSVS database
 
 positional arguments:
-  db                 The database's folder location
+  db                   The database's folder location
 
 optional arguments:
-  -h, --help         show this help message and exit
-  --all-labs, -L     Include all LABs in the LAB pass.
-  --include-pau, -P  Include pau phoneme in the phoneme tally passes.
+  -h, --help           show this help message and exit
+  --all-labs, -l       Include all LABs in the LAB pass.
+  --include-pau, -p    Include pau phoneme in the phoneme tally passes.
+  --skip-diphone, -s   Skip diphone density in calculations.
+  --write-diphone, -w  Include diphone density in the .csv version.
 ```
   
 This script will then save a `stats.txt` file inside the database folder you have passed to it.
+
+**Update 09/27/2022:** This script will now generate a `stats.csv` file as well to import statistics into a spreadsheet format automatically.
 
 ### lab2ust
 The whole lab2ust folder will be put in the UTAU plugins folder.

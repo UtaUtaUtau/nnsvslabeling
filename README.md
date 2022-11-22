@@ -44,6 +44,28 @@ This script will then save a `stats.txt` file inside the database folder you hav
 
 **Update 09/27/2022:** This script will now generate a `stats.csv` file as well to import statistics into a spreadsheet format automatically.
 
+### world_shift.py
+
+This script is for data augmentation (in a sense). It shifts all the `.wav` files in the folder that the script is in by the amount of semitones listed in the `pitches` list of the script. By default it is ±5 and ±12. You can change it by opening the script in a text editor and changing it yourself.
+
+Example for changing the pitches:
+
+```Python
+#...
+import os
+import logging
+
+pitches = [-12, -5, 5, 12] # This is the part to change.
+# Let's say you want only ±3. You change it to pitches = [-3, 3]
+
+def shift_pitch(path):
+    loc, _ = os.path.splitext(path)
+    directory, fname = os.path.split(loc)
+	# ...
+```
+
+This script requires numpy, scipy, and pyworld to be installed in your Python environment. You can just run ```pip install numpy scipy pyworld``` in the terminal to install it.
+
 ### lab2ust
 The whole lab2ust folder will be put in the UTAU plugins folder.
 

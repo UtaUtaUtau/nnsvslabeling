@@ -66,6 +66,25 @@ def shift_pitch(path):
 
 This script requires numpy, scipy, and pyworld to be installed in your Python environment. You can just run ```pip install numpy scipy pyworld``` in the terminal to install it.
 
+### harvest_frq.py
+
+This script generates `.frq` files using the Harvest F0 estimation algorithm from WORLD. It uses Python's multiprocessing module to speed up the process of generating `.frq` files. This script is definitely not restricted to usage for NNSVS only, as you can use it to make `.frq` files for your UTAU voicebanks as well. You may also drag and drop the folder over the script file to run it, or use the terminal to run it.
+
+```
+usage: harvest_frq.py [-h] [--single-thread] vb
+
+Generate .frq files using WORLD's Harvest F0 estimation algorithm.
+
+positional arguments:
+  vb                   The voicebank location
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --single-thread, -s  Run single threaded
+```
+
+This script also requires numpy, scipy and pyworld.
+
 ### lab2ust
 The whole lab2ust folder will be put in the UTAU plugins folder.
 

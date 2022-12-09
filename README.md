@@ -14,7 +14,7 @@ Here's a table for jumping for convenience
 | [check_labels.py](#check_labelspy) |
 | [world_shift.py](#world_shiftpy) |
 | [harvest_frq.py](#harvest_frqpy) |
-| [threaded_noise_remove.py](#threaded_noise_remove) |
+| [threaded_noise_remove.py](#threaded_noise_removepy) |
 
 ### lab2ust
 The whole lab2ust folder will be put in the UTAU plugins folder.

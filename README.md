@@ -85,6 +85,26 @@ optional arguments:
 
 This script also requires numpy, scipy and pyworld.
 
+### threaded_noise_remove.py
+
+This script uses the Log-MMSE algorithm to denoise all `.wav` files in a folder, including its subfolders. It assumes that the first 120ms of each sample is noise. Performance is also dependent on the noise type as this is still an algorithmic noise remover.
+
+```
+usage: threaded_noise_remove.py [-h] [--single-thread] dir
+
+Denoises all wave files in a directory using the Log-MMSE algorithm.
+Assumes the first 120 ms of the samples are pure noise.
+
+positional arguments:
+  dir                  The directory of the wave files
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --single-thread, -s  Run single threaded
+```
+
+This script requires numpy and scipy. The Log-MMSE implementation is a direct translation of [this MATLAB code](https://raw.githubusercontent.com/braindead/Noise-reduction/master/logmmse.m) into Python.
+
 ### lab2ust
 The whole lab2ust folder will be put in the UTAU plugins folder.
 

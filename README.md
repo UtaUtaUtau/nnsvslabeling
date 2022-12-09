@@ -6,6 +6,7 @@ Python scripts I made to make NNSVS labeling easier.
 You will need Python for all of these to work, of course. I wrote this in Python 3.8.10
 
 Here's a table for jumping for convenience
+|     |
 | --- |
 | [lab2ust](#lab2ust) |
 | [database_stats](#database_stats) |

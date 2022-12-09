@@ -89,7 +89,7 @@ It's exactly what the file says. It checks for wrong phonemes in every .lab file
 
 It checks Japanese labels by default, but if you want to change what language it checks, just open it up and change the `phones` list to the phoneme list you want it to be.
 
-Update 06/15/2022: Added a feature that counts how many instances of each phoneme is present in the labels. The program will alert you if there is no instance of a certain phoneme by default but you may change it to be a certain threshold. At line 28 in the code (looks like `if v == 0:`) you may change it to something like `if v <= n:` with `n` being a threshold that you think is appropriate enough.
+**Update 06/15/2022:** Added a feature that counts how many instances of each phoneme is present in the labels. The program will alert you if there is no instance of a certain phoneme by default but you may change it to be a certain threshold. At line 28 in the code (looks like `if v == 0:`) you may change it to something like `if v <= n:` with `n` being a threshold that you think is appropriate enough.
 
 ### world_shift.py
 

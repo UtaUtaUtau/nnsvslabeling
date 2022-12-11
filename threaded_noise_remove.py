@@ -103,9 +103,14 @@ def remove_noise(path):
     actual_type = data.dtype
     int_type = np.issubdtype(actual_type, np.integer)
 
+    # Deal with integer wavs... mostly
     if int_type:
         info = np.iinfo(actual_type)
         data = data / info.max
+
+    # Deal with multi-channel wavs... kinda.
+    if len(data.shape) == 2:
+        data = np.mean(data, axis=1)
     
     # Setup highpass
     nyq = 0.5 * fs

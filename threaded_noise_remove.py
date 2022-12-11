@@ -112,10 +112,9 @@ def remove_noise(path):
     cutoff = 100 / nyq
     sos = signal.butter(2, cutoff, btype='high', output='sos')
 
-    # Highpass, Noise remove, Highpass, Clip
+    # Highpass, Noise remove, Clip
     data = signal.sosfiltfilt(sos, data)
     data = logmmse(data, fs)
-    data = signal.sosfiltfilt(sos, data)
     if int_type:
         data = np.clip(data * info.max, info.min, info.max).astype(actual_type)
 

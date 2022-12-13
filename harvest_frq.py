@@ -10,6 +10,7 @@ import time
 import struct
 import os
 import traceback
+from multiprocessing import freeze_support
 import concurrent.futures
 from argparse import ArgumentParser
 
@@ -85,33 +86,41 @@ def frq_gen(floc, f0_max=880, hop=256):
     t = time.perf_counter()
     logging.info(f'{basename}_wav.frq finished at {t - t0:.3f} seconds.')
 
+def process_directory(args):
+    samples = []
+    logging.info('Listing all samples')
+    for root, dirs, files in os.walk(args.path):
+        for file in files:
+            if file.endswith('.wav'):
+                fname, _ = os.path.splitext(file)
+                samples.append(os.path.join(root, file))
+    if args.single_thread:
+        logging.info('Running single threaded')
+        t0 = time.perf_counter()
+        for sample in samples:
+            frq_gen(sample)
+        t = time.perf_counter()
+    else:
+        logging.info('Starting process pool')
+        t0 = time.perf_counter()
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            executor.map(frq_gen, samples)
+        t = time.perf_counter()
+    logging.info(f'Whole operation took {t - t0:.3f} seconds.')
+
 if __name__ == '__main__':
+    freeze_support()
     try:
         parser = ArgumentParser(description="Generate .frq files using WORLD's Harvest F0 estimation algorithm.")
-        parser.add_argument('vb', help='The voicebank location')
+        parser.add_argument('path', help='The path to a .wav file or a directory with .wav files.')
         parser.add_argument('--single-thread', '-s', action='store_true', help='Run single threaded')
 
         args, _ = parser.parse_known_args()
-        samples = []
-        logging.info('Listing all samples')
-        for root, dirs, files in os.walk(args.vb):
-            for file in files:
-                if file.endswith('.wav'):
-                    fname, _ = os.path.splitext(file)
-                    samples.append(os.path.join(root, file))
-        if args.single_thread:
-            logging.info('Running single threaded')
-            t0 = time.perf_counter()
-            for sample in samples:
-                frq_gen(sample)
-            t = time.perf_counter()
+        if os.path.isfile(args.path):
+            logging.info('Received file')
+            frq_gen(args.path)
         else:
-            logging.info('Starting process pool')
-            t0 = time.perf_counter()
-            with concurrent.futures.ProcessPoolExecutor() as executor:
-                executor.map(frq_gen, samples)
-            t = time.perf_counter()
-        logging.info(f'Whole operation took {t - t0:.3f} seconds.')
+            process_directory(args)
         os.system('pause')
     except Exception as e:
         for i in traceback.format_exception(e.__class__, e, e.__traceback__):

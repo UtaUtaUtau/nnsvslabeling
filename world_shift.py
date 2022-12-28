@@ -26,7 +26,7 @@ def shift_pitch(path):
     logging.info(f'Analyzing {fname}')
     f0, t = world.harvest(x, fs)
     sp = world.cheaptrick(x, f0, t, fs)
-    ap = world.d4c(x, f0, t, fs)
+    ap = world.d4c(x, f0, t, fs, threshold=0.25)
 
     for i in pitches:
         if i == 0:

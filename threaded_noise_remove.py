@@ -3,7 +3,7 @@ logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.INFO, datef
 if __name__ == '__main__':
     logging.info('Importing packages')
 import numpy as np
-import scipy.io.wavfile as wav
+import soundfile as sf
 import scipy.signal as signal
 import scipy.fft as fft
 from scipy.special import expn
@@ -100,14 +100,7 @@ def remove_noise(path):
     new_path = os.path.join(directory, new_fname)
 
     # Setup file
-    fs, data = wav.read(path)
-    actual_type = data.dtype
-    int_type = np.issubdtype(actual_type, np.integer)
-
-    # Deal with integer wavs... mostly
-    if int_type:
-        info = np.iinfo(actual_type)
-        data = data / info.max
+    data, fs = sf.read(path)
 
     # Deal with multi-channel wavs... kinda.
     if len(data.shape) == 2:
@@ -121,11 +114,9 @@ def remove_noise(path):
     # Highpass, Noise remove, Clip
     data = signal.sosfiltfilt(sos, data)
     data = logmmse(data, fs)
-    if int_type:
-        data = np.clip(data * info.max, info.min, info.max).astype(actual_type)
 
     # Save on new path, delete old path. Safety reasons
-    wav.write(new_path, fs, data)
+    sf.write(new_path, data, fs)
     os.remove(path)
     os.rename(new_path, path)
     t = time.perf_counter()
@@ -140,16 +131,16 @@ def process_directory(args):
                 samples.append(os.path.join(root, file))
     logging.info(f'Listed {len(samples)} file{"s" if len(samples) != 1 else ""}')
 
-    if args.single_thread:
+    if args.single_thread or args.num_threads == 1:
         logging.info('Running single threaded')
         t0 = time.perf_counter()
         for sample in samples:
             remove_noise(sample)
         t = time.perf_counter()
     else:
-        logging.info('Starting process pool')
+        logging.info('Starting process pool with {args.num_threads} threads.')
         t0 = time.perf_counter()
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=args.num_threads) as executor:
             executor.map(remove_noise, samples)
         t = time.perf_counter()
     logging.info(f'Whole operation took {t - t0:.3f} seconds')
@@ -160,6 +151,7 @@ if __name__ == '__main__':
         parser = ArgumentParser(description='Denoises all wave files in a directory using the Log-MMSE algorithm.\nAssumes the first 120 ms of the samples are pure noise.', formatter_class=RawDescriptionHelpFormatter)
         parser.add_argument('path', help='The path to a .wav file or a directory with .wav files.')
         parser.add_argument('--single-thread', '-s', action='store_true', help='Run single threaded')
+        parser.add_argument('--num-threads', '-n', type=int, default=os.cpu_count(), help='How many threads to use. Default is your thread count.')
 
         args, _ = parser.parse_known_args()
         if os.path.isfile(args.path):

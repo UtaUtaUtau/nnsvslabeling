@@ -111,47 +111,57 @@ def shift_pitch(path):
 	# ...
 ```
 
-This script requires numpy, scipy, and pyworld to be installed in your Python environment. You can just run ```pip install numpy scipy pyworld``` in the terminal to install it.
+This script requires numpy, soundfile, and pyworld to be installed in your Python environment. You can just run ```pip install numpy soundfile pyworld``` in the terminal to install it.
+
+**UPDATE 06/14/2023:** Switched to `soundfile` for dealing with `.wav` files.
 
 ### harvest_frq.py
 
 This script generates `.frq` files using the Harvest F0 estimation algorithm from WORLD. It uses Python's multiprocessing module to speed up the process of generating `.frq` files. This script is definitely not restricted to usage for NNSVS only, as you can use it to make `.frq` files for your UTAU voicebanks as well. You may also drag and drop the folder over the script file to run it, or use the terminal to run it.
 
 ```
-usage: harvest_frq.py [-h] [--single-thread] path
+usage: harvest_frq.exe [-h] [--single-thread] [--num-threads NUM_THREADS] path
 
 Generate .frq files using WORLD's Harvest F0 estimation algorithm.
 
 positional arguments:
-  path                 The path to a .wav file or a directory with .wav files.
+  path                  The path to a .wav file or a directory with .wav files.
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --single-thread, -s  Run single threaded
+  -h, --help            show this help message and exit
+  --single-thread, -s   Run single threaded
+  --num-threads NUM_THREADS, -n NUM_THREADS
+                        How many threads to use. Default is a third of your thread count.
 ```
 
-This script also requires numpy, scipy and pyworld.
+This script also requires numpy, pyworld and soundfile.
 
 **UPDATE 12/13/2022:** Made this script support making a `.frq` file for a single `.wav` file through the same drag and drop behavior.
+
+**UPDATE 06/14/2023:** Added an optional argument to limit the number of threads used and switched to `soundfile` for reading `.wav` files.
 
 ### threaded_noise_remove.py
 
 This script uses the Log-MMSE algorithm to denoise all `.wav` files in a folder, including its subfolders. It assumes that the first 120ms of each sample is noise. Performance is also dependent on the noise type as this is still an algorithmic noise remover.
 
 ```
-usage: threaded_noise_remove.py [-h] [--single-thread] path
+usage: threaded_noise_remove.exe [-h] [--single-thread] [--num-threads NUM_THREADS] path
 
 Denoises all wave files in a directory using the Log-MMSE algorithm.
 Assumes the first 120 ms of the samples are pure noise.
 
 positional arguments:
-  path                 The path to a .wav file or a directory with .wav files.
+  path                  The path to a .wav file or a directory with .wav files.
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --single-thread, -s  Run single threaded
+  -h, --help            show this help message and exit
+  --single-thread, -s   Run single threaded
+  --num-threads NUM_THREADS, -n NUM_THREADS
+                        How many threads to use. Default is your thread count.
 ```
 
-This script requires numpy and scipy. The Log-MMSE implementation is a direct translation of [this MATLAB code](https://raw.githubusercontent.com/braindead/Noise-reduction/master/logmmse.m) into Python.
+This script requires numpy, scipy and soundfile. The Log-MMSE implementation is a direct translation of [this MATLAB code](https://raw.githubusercontent.com/braindead/Noise-reduction/master/logmmse.m) into Python.
 
 **UPDATE 12/13/2022:** Made this script support denoising a single `.wav` file through the same drag and drop behavior.
+
+**UPDATE 06/14/2023:** Added an optional argument to limit the number of threads used and switched to `soundfile` for dealing with `.wav` files.

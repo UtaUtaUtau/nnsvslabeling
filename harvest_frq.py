@@ -3,7 +3,7 @@ logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.INFO, datef
 if __name__ == '__main__':
     logging.info('Importing packages')
 import numpy as np
-import scipy.io.wavfile as wav
+import soundfile as sf
 import pyworld as world
 import sys
 import time
@@ -14,39 +14,35 @@ from multiprocessing import freeze_support
 import concurrent.futures
 from argparse import ArgumentParser
 
-def base_frq(f0, f0_min=None, f0_max=880):
-    value = 0
-    r = 1
-    p = [0, 0, 0, 0, 0, 0]
+f0_floor = world.default_f0_floor
+f0_ceil = world.default_f0_ceil
+
+def base_frq(f0, f0_min=None, f0_max=None):
     q = 0
     avg_frq = 0
-    base_value = 0
+    tally = 0
+    N = len(f0)
 
-    if not f0_min:
-        f0_min = world.default_f0_floor
+    if f0_min is None:
+        f0_min = f0_floor
 
-    if not f0_max:
-        f0_max = world.default_f0_ceil
+    if f0_max is None:
+        f0_max = f0_ceil
     
-    for i in range(0, len(f0)):
-        value = f0[i]
-        if value <= f0_max and value >= f0_min:
-            r = 1
+    for i in range(N):
+        if f0[i] >= f0_min and f0[i] <= f0_max:
+            if i < 1:
+                q = f0[i+1] - f0[i]
+            elif i == N - 1:
+                q = f0[i] - f0[i-1]
+            else:
+                q = (f0[i+1] - f0[i-1]) / 2
+            weight = 2 ** (-q * q)
+            avg_frq += f0[i] * weight
+            tally += weight
 
-            for j in range(0, 6):
-                if i > j:
-                    q = f0[i - j - 1] - value
-                    p[j] = value / (value + q * q)
-                else:
-                    p[j] = 1 / (1 + value)
-                    
-                r *= p[j]
-
-            avg_frq += value * r
-            base_value += r
-
-    if base_value > 0:
-        avg_frq /= base_value
+    if tally > 0:
+        avg_frq /= tally
     return avg_frq
 
 def frq_gen(floc, f0_max=880, hop=256):
@@ -54,16 +50,7 @@ def frq_gen(floc, f0_max=880, hop=256):
     fname, _ = os.path.splitext(floc)
     basename = os.path.basename(fname)
     logging.info(f'Making {basename}_wav.frq 1/4')
-    fs, x = wav.read(floc)
-    xtype = x.dtype
-    int_type = np.issubdtype(xtype, np.integer)
-
-    if int_type:
-        info = np.iinfo(xtype)
-        x = x / info.max
-
-    if len(x.shape) == 2:
-        x = (x[:,0] + x[:,1]) / 2
+    x, fs = sf.read(floc)
 
     logging.info(f'Making {basename}_wav.frq 2/4')
     frame_period = 1000 * hop / fs
@@ -88,22 +75,24 @@ def frq_gen(floc, f0_max=880, hop=256):
 
 def process_directory(args):
     samples = []
-    logging.info('Listing all samples')
+    logging.info('Received directory. Listing files')
     for root, dirs, files in os.walk(args.path):
         for file in files:
             if file.endswith('.wav'):
                 fname, _ = os.path.splitext(file)
                 samples.append(os.path.join(root, file))
-    if args.single_thread:
+    logging.info(f'Listed {len(samples)} file{"s" if len(samples) != 1 else ""}')
+                
+    if args.single_thread or args.num_threads == 1:
         logging.info('Running single threaded')
         t0 = time.perf_counter()
         for sample in samples:
             frq_gen(sample)
         t = time.perf_counter()
     else:
-        logging.info('Starting process pool')
+        logging.info('Starting process pool with {args.num_threads} threads.')
         t0 = time.perf_counter()
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=args.num_threads) as executor:
             executor.map(frq_gen, samples)
         t = time.perf_counter()
     logging.info(f'Whole operation took {t - t0:.3f} seconds.')
@@ -114,6 +103,7 @@ if __name__ == '__main__':
         parser = ArgumentParser(description="Generate .frq files using WORLD's Harvest F0 estimation algorithm.")
         parser.add_argument('path', help='The path to a .wav file or a directory with .wav files.')
         parser.add_argument('--single-thread', '-s', action='store_true', help='Run single threaded')
+        parser.add_argument('--num-threads', '-n', type=int, default=os.cpu_count() // 3, help='How many threads to use. Default is a third of your thread count.')
 
         args, _ = parser.parse_known_args()
         if os.path.isfile(args.path):

@@ -138,7 +138,7 @@ def process_directory(args):
             remove_noise(sample)
         t = time.perf_counter()
     else:
-        logging.info('Starting process pool with {args.num_threads} threads.')
+        logging.info(f'Starting process pool with {args.num_threads} threads.')
         t0 = time.perf_counter()
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.num_threads) as executor:
             executor.map(remove_noise, samples)

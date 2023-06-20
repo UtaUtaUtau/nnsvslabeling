@@ -120,7 +120,7 @@ This script requires numpy, soundfile, and pyworld to be installed in your Pytho
 This script generates `.frq` files using the Harvest F0 estimation algorithm from WORLD. It uses Python's multiprocessing module to speed up the process of generating `.frq` files. This script is definitely not restricted to usage for NNSVS only, as you can use it to make `.frq` files for your UTAU voicebanks as well. You may also drag and drop the folder over the script file to run it, or use the terminal to run it.
 
 ```
-usage: harvest_frq.exe [-h] [--single-thread] [--num-threads NUM_THREADS] path
+usage: harvest_frq.exe [-h] [--num-threads NUM_THREADS] path
 
 Generate .frq files using WORLD's Harvest F0 estimation algorithm.
 
@@ -129,16 +129,20 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --single-thread, -s   Run single threaded
   --num-threads NUM_THREADS, -n NUM_THREADS
-                        How many threads to use. Default is a third of your thread count.
+                        How many threads to use. Default is running single threaded. Input zero to use all available
+                        threads.
 ```
 
 This script also requires numpy, pyworld and soundfile.
 
+**WARNING:** It seems to be generally safer to run `harvest_frq` without threading, as Harvest itself is quite CPU-intensive. If you think you can run it with multiple threads you may do it, but remember that ***you are willingly putting your computer at risk by doing so.***
+
 **UPDATE 12/13/2022:** Made this script support making a `.frq` file for a single `.wav` file through the same drag and drop behavior.
 
 **UPDATE 06/14/2023:** Added an optional argument to limit the number of threads used and switched to `soundfile` for reading `.wav` files.
+
+**UPDATE 06/21/2023:** Default to running without threading. Read warning as to why.
 
 ### threaded_noise_remove.py
 
@@ -161,6 +165,8 @@ optional arguments:
 ```
 
 This script requires numpy, scipy and soundfile. The Log-MMSE implementation is a direct translation of [this MATLAB code](https://raw.githubusercontent.com/braindead/Noise-reduction/master/logmmse.m) into Python.
+
+**Slight WARNING:** `threaded_noise_remove` seems to be quite safe even with threading, but please do check if your CPU can handle it.
 
 **UPDATE 12/13/2022:** Made this script support denoising a single `.wav` file through the same drag and drop behavior.
 

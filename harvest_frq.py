@@ -82,17 +82,19 @@ def process_directory(args):
                 fname, _ = os.path.splitext(file)
                 samples.append(os.path.join(root, file))
     logging.info(f'Listed {len(samples)} file{"s" if len(samples) != 1 else ""}')
-                
-    if args.single_thread or args.num_threads == 1:
+
+    num_threads = max(0, args.num_threads)
+    if num_threads == 1:
         logging.info('Running single threaded')
         t0 = time.perf_counter()
         for sample in samples:
             frq_gen(sample)
         t = time.perf_counter()
     else:
-        logging.info('Starting process pool with {args.num_threads} threads.')
+        workers = os.cpu_count if num_threads == 0 else num_threads
+        logging.info(f'Starting process pool with {workers} threads.')
         t0 = time.perf_counter()
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.num_threads) as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
             executor.map(frq_gen, samples)
         t = time.perf_counter()
     logging.info(f'Whole operation took {t - t0:.3f} seconds.')
@@ -102,8 +104,7 @@ if __name__ == '__main__':
     try:
         parser = ArgumentParser(description="Generate .frq files using WORLD's Harvest F0 estimation algorithm.")
         parser.add_argument('path', help='The path to a .wav file or a directory with .wav files.')
-        parser.add_argument('--single-thread', '-s', action='store_true', help='Run single threaded')
-        parser.add_argument('--num-threads', '-n', type=int, default=os.cpu_count() // 3, help='How many threads to use. Default is a third of your thread count.')
+        parser.add_argument('--num-threads', '-n', type=int, default=1, help='How many threads to use. Default is running single threaded. Input zero to use all available threads.')
 
         args, _ = parser.parse_known_args()
         if os.path.isfile(args.path):
